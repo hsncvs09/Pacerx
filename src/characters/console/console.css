@@ -1,0 +1,96 @@
+.console-buddy-group {
+  transform-origin: 16px 36px;
+}
+
+@keyframes buddy-breathe {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-0.7px);
+  }
+}
+
+@keyframes buddy-jump {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2.2px);
+  }
+}
+
+@keyframes buddy-squash {
+  0% {
+    transform: scale(1.08, 0.9);
+  }
+  60% {
+    transform: scale(0.96, 1.04);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes buddy-nag {
+  0%,
+  100% {
+    transform: translateX(0px);
+  }
+  25% {
+    transform: translateX(-0.6px);
+  }
+  75% {
+    transform: translateX(0.6px);
+  }
+}
+
+@keyframes buddy-dangle {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+.anim-breathe {
+  animation: buddy-breathe 2.2s steps(2, end) infinite;
+}
+
+.anim-breathe-slow {
+  animation: buddy-breathe 3.4s steps(2, end) infinite;
+}
+
+.anim-walk {
+  animation: buddy-breathe 0.5s steps(2, end) infinite;
+}
+
+.anim-jump {
+  animation: buddy-jump 0.45s steps(2, end) infinite;
+}
+
+.anim-squash {
+  animation: buddy-squash 0.35s steps(3, end) 1;
+}
+
+.anim-nag {
+  animation: buddy-nag 0.6s steps(2, end) infinite;
+}
+
+.anim-warning {
+  animation: buddy-nag 0.9s steps(2, end) infinite;
+}
+
+.anim-dangle {
+  transform-origin: 16px 10px;
+  animation: buddy-dangle 0.4s steps(2, end) infinite;
+}
+
+.reduced-motion {
+  animation: none !important;
+  transform: none !important;
+}
