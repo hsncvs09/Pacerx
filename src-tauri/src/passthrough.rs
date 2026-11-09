@@ -34,6 +34,15 @@ pub fn spawn(app: AppHandle) {
 
             let cur_i = (cur.x as i32, cur.y as i32);
             let state = app.state::<AppState>();
+            if state.is_dragging.load(Ordering::Relaxed) {
+                if ignoring {
+                    let _ = win.set_ignore_cursor_events(false);
+                    ignoring = false;
+                }
+                current_interval = Duration::from_millis(100);
+                continue;
+            }
+
             let hit_gen = state.hit_gen.load(Ordering::Relaxed);
 
             // Fast path: if cursor hasn't moved and hit regions haven't changed, skip window queries

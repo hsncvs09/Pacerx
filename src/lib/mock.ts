@@ -179,6 +179,17 @@ export function createMockApi(): Api {
       settingsListeners.add(cb);
       return () => settingsListeners.delete(cb);
     },
-    async startDragging() {},
+    async startDragging() {
+      if (typeof window === "undefined") return;
+      return new Promise<void>((resolve) => {
+        const onUp = () => {
+          window.removeEventListener("pointerup", onUp);
+          window.removeEventListener("mouseup", onUp);
+          resolve();
+        };
+        window.addEventListener("pointerup", onUp, { once: true });
+        window.addEventListener("mouseup", onUp, { once: true });
+      });
+    },
   };
 }

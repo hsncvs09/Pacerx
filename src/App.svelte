@@ -131,6 +131,7 @@
   }
 
   async function handleDragStart() {
+    if (ix.dragging) return;
     unlockAudio();
     ix = { ...ix, dragging: true };
     nowMs = Date.now();
@@ -143,10 +144,9 @@
   }
 
   function handleDragEnd() {
-    if (ix.dragging) {
-      ix = { ...ix, dragging: false };
-      nowMs = Date.now();
-    }
+    // Sürükleme durumu Tauri ve mock ortamında api.startDragging() yaşam döngüsüyle yönetilir.
+    // Windows/Chromium imleç kontrolünü devraldığında tetiklenen pointercancel/buttons=0 olaylarının
+    // sürükleme animasyonunu erkenden kesmesi engellenir.
   }
 
   async function handleCommand(cmd: Command) {

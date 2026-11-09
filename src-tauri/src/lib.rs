@@ -9,7 +9,7 @@ use pomodoro_core::session::{Command, Config, Phase, Session, Snapshot};
 use pomodoro_core::settings::Settings;
 use pomodoro_core::stats::{DailyStats, StatsStore};
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, State};
@@ -34,6 +34,7 @@ pub struct AppState {
     pub inner: Mutex<InnerState>,
     pub hit: Mutex<HitRegions>,
     pub hit_gen: AtomicU64,
+    pub is_dragging: AtomicBool,
     pub paths: AppPaths,
 }
 
@@ -112,6 +113,60 @@ fn set_hit_regions(state: State<'_, AppState>, rects: Vec<Rect>) {
         *hit = HitRegions::new(rects);
         state.hit_gen.fetch_add(1, Ordering::Relaxed);
     }
+}
+
+#[tauri::command]
+async fn start_dragging(app: AppHandle, state: State<'_, AppState>) -> Result<(), String> {
+    let Some(win) = app.get_webview_window("main") else {
+        return Err("main window not found".to_string());
+    };
+
+    state.is_dragging.store(true, Ordering::Relaxed);
+    let _ = win.set_ignore_cursor_events(false);
+
+    let res = win.start_dragging().map_err(|e| e.to_string());
+    if let Err(e) = res {
+        state.is_dragging.store(false, Ordering::Relaxed);
+        return Err(e);
+    }
+
+    #[cfg(windows)]
+    {
+        use windows::Win32::UI::Input::KeyboardAndMouse::{
+            GetAsyncKeyState, VK_ESCAPE, VK_LBUTTON, VK_RBUTTON,
+        };
+        use windows::Win32::UI::WindowsAndMessaging::{GetSystemMetrics, SM_SWAPBUTTON};
+
+        let vkey = if unsafe { GetSystemMetrics(SM_SWAPBUTTON) } != 0 {
+            VK_RBUTTON.0 as i32
+        } else {
+            VK_LBUTTON.0 as i32
+        };
+
+        // Allow Windows a brief moment to process the message and begin window dragging
+        tokio::time::sleep(Duration::from_millis(20)).await;
+
+        loop {
+            let is_down = (unsafe { GetAsyncKeyState(vkey) } as u16 & 0x8000) != 0;
+            if !is_down {
+                break;
+            }
+
+            let is_esc = (unsafe { GetAsyncKeyState(VK_ESCAPE.0 as i32) } as u16 & 0x8000) != 0;
+            if is_esc {
+                break;
+            }
+
+            if !win.is_visible().unwrap_or(false) {
+                break;
+            }
+
+            tokio::time::sleep(Duration::from_millis(16)).await;
+        }
+    }
+
+    state.is_dragging.store(false, Ordering::Relaxed);
+    Ok(())
 }
 
 fn spawn_ticker(app: AppHandle) {
@@ -248,6 +303,7 @@ pub fn run() {
                 }),
                 hit: Mutex::new(HitRegions::full(210.0, 310.0)),
                 hit_gen: AtomicU64::new(1),
+                is_dragging: AtomicBool::new(false),
                 paths: AppPaths {
                     stats_path,
                     settings_path,
@@ -270,6 +326,7 @@ pub fn run() {
             get_settings,
             set_character,
             set_hit_regions,
+            start_dragging,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

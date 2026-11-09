@@ -67,6 +67,12 @@
     return () => ro.disconnect();
   });
 
+  $effect(() => {
+    if (mood !== "dragged" && gesture.dragging) {
+      gesture = initialGestureState();
+    }
+  });
+
   function handlePointerDown(e: PointerEvent) {
     if (e.button !== 0) return;
     const step = stepGesture(gesture, {
@@ -94,7 +100,6 @@
     });
     gesture = step.state;
     if (step.action === "drag_start") {
-      gesture = initialGestureState();
       onDragStart();
     }
   }

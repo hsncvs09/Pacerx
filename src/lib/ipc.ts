@@ -1,6 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import { createMockApi } from "./mock";
 import type {
   Command,
@@ -42,7 +41,7 @@ function createTauriApi(): Api {
       listen<DomainEvent>("session://event", (e) => cb(e.payload)),
     onSettings: (cb) =>
       listen<Settings>("settings://changed", (e) => cb(e.payload)),
-    startDragging: () => getCurrentWindow().startDragging(),
+    startDragging: () => invoke<void>("start_dragging"),
   };
 }
 
