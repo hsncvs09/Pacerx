@@ -132,14 +132,17 @@
 
   async function handleDragStart() {
     if (ix.dragging) return;
-    unlockAudio();
     ix = { ...ix, dragging: true };
     nowMs = Date.now();
+    // Komutu hemen gönder: ilk çağrıda AudioContext oluşturmak JS thread'ini
+    // bloklayıp sürüklemenin gecikmeli başlamasına neden oluyordu.
+    const dragPromise = api.startDragging();
     try {
-      await api.startDragging();
+      await dragPromise;
     } finally {
       ix = { ...ix, dragging: false };
       nowMs = Date.now();
+      unlockAudio();
     }
   }
 
@@ -172,6 +175,10 @@
       reducedMotion = e.matches;
     };
     mq.addEventListener("change", onMqChange);
+
+    // AudioContext'i etkileşimden bağımsız, boşta bir anda önceden oluştur;
+    // böylece ilk sürükleme/tıklama sırasında ağır ses kurulumu yaşanmaz.
+    const warmAudio = setTimeout(() => unlockAudio(), 1500);
 
     api
       .getSnapshot()
@@ -211,6 +218,7 @@
     });
 
     return () => {
+      clearTimeout(warmAudio);
       window.removeEventListener("hashchange", onHashChange);
       mq.removeEventListener("change", onMqChange);
       unsubSnap.then((fn) => fn());
