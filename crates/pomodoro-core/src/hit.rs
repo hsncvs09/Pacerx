@@ -42,17 +42,17 @@ impl HitRegions {
     }
 }
 
-/// Returns a fast polling interval (33ms ≈ 30 Hz) when the cursor is within `margin` logical px
-/// of the window rectangle, or a slow interval (250ms = 4 Hz) when far away.
+/// Returns a fast polling interval (16ms ≈ 60 Hz) when the cursor is within `margin` logical px
+/// of the window rectangle, or a responsive interval (60ms ≈ 16 Hz) when far away.
 pub fn poll_interval(cursor_rel: (f64, f64), win: (f64, f64), margin: f64) -> Duration {
     let (cx, cy) = cursor_rel;
     let (ww, wh) = win;
     let near_x = cx >= -margin && cx <= ww + margin;
     let near_y = cy >= -margin && cy <= wh + margin;
     if near_x && near_y {
-        Duration::from_millis(33)
+        Duration::from_millis(16)
     } else {
-        Duration::from_millis(250)
+        Duration::from_millis(60)
     }
 }
 
@@ -96,10 +96,10 @@ mod tests {
         let win = (200.0, 270.0);
         let margin = 48.0;
 
-        assert_eq!(poll_interval((100.0, 100.0), win, margin), Duration::from_millis(33));
-        assert_eq!(poll_interval((-48.0, 0.0), win, margin), Duration::from_millis(33));
-        assert_eq!(poll_interval((248.0, 270.0), win, margin), Duration::from_millis(33));
-        assert_eq!(poll_interval((-48.1, 0.0), win, margin), Duration::from_millis(250));
-        assert_eq!(poll_interval((100.0, 318.1), win, margin), Duration::from_millis(250));
+        assert_eq!(poll_interval((100.0, 100.0), win, margin), Duration::from_millis(16));
+        assert_eq!(poll_interval((-48.0, 0.0), win, margin), Duration::from_millis(16));
+        assert_eq!(poll_interval((248.0, 270.0), win, margin), Duration::from_millis(16));
+        assert_eq!(poll_interval((-48.1, 0.0), win, margin), Duration::from_millis(60));
+        assert_eq!(poll_interval((100.0, 318.1), win, margin), Duration::from_millis(60));
     }
 }

@@ -123,6 +123,7 @@ async fn start_dragging(app: AppHandle, state: State<'_, AppState>) -> Result<()
 
     state.is_dragging.store(true, Ordering::Relaxed);
     let _ = win.set_ignore_cursor_events(false);
+    let _ = win.set_focus();
 
     let res = win.start_dragging().map_err(|e| e.to_string());
     if let Err(e) = res {

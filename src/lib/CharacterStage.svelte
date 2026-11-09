@@ -75,6 +75,9 @@
 
   function handlePointerDown(e: PointerEvent) {
     if (e.button !== 0) return;
+    try {
+      (e.currentTarget as Element)?.setPointerCapture?.(e.pointerId);
+    } catch {}
     const step = stepGesture(gesture, {
       type: "down",
       x: e.clientX,
@@ -168,6 +171,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: auto;
   }
 
   /* No CSS drop-shadow filter on SVG: prevents WebView2 Skia offscreen texture leak and CPU spikes */
@@ -177,6 +181,7 @@
     cursor: grab;
     touch-action: none;
     overflow: visible;
+    pointer-events: auto;
   }
 
   .character-svg.pixel-art {

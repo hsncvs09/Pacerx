@@ -10,7 +10,7 @@ pub fn spawn(app: AppHandle) {
         let mut ignoring = false;
         let mut last_cur: Option<(i32, i32)> = None;
         let mut last_hit_gen: u64 = 0;
-        let mut current_interval = Duration::from_millis(250);
+        let mut current_interval = Duration::from_millis(60);
 
         loop {
             sleep(current_interval).await;
@@ -85,7 +85,7 @@ pub fn spawn(app: AppHandle) {
                 ignoring = !inside;
             }
 
-            current_interval = hit::poll_interval((rel_x, rel_y), (logical_w, logical_h), 48.0);
+            current_interval = hit::poll_interval((rel_x, rel_y), (logical_w, logical_h), 96.0);
         }
     });
 }
