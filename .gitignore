@@ -10,3 +10,9 @@ node_modules
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Kişisel notlar / yerel dosyalar
+NOT.txt
+not.txt
+*.local.txt
+
