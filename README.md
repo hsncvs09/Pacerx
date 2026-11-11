@@ -21,7 +21,7 @@ Ekranınızın köşesinde yaşayan, şeffaf arka planlı, her zaman üstte dura
 Bilgisayarınıza hiçbir geliştirici aracı kurmadan doğrudan kullanmak için:
 
 1. Bu GitHub sayfasının sağ tarafındaki **[Releases](../../releases)** bölümüne tıklayın.
-2. En son sürümün altındaki **`Pomodoro.Companion_0.1.0_x64-setup.exe`** (veya `Pomodoro Companion_0.1.0_x64-setup.exe`) kurulum dosyasını indirin ve çalıştırın.
+2. En son sürümün altındaki **`Pomodoro.Companion_0.2.0_x64-setup.exe`** (veya `Pomodoro Companion_0.2.0_x64-setup.exe`) kurulum dosyasını indirin ve çalıştırın.
    > **Not:** Windows SmartScreen *"Windows kişisel bilgisayarınızı korudu"* uyarısı gösterirse **"Ek bilgi" (More info) → "Yine de çalıştır" (Run anyway)** seçeneğine tıklayın.
 
 ---
@@ -63,4 +63,4 @@ npm.cmd test
 # Kurulum paketini (.exe) oluştur
 npm.cmd run tauri build
 ```
-Kurulum dosyası `target\release\bundle\nsis\Pomodoro Companion_0.1.0_x64-setup.exe` konumunda oluşturulur.
+Kurulum dosyası `target\release\bundle\nsis\Pomodoro Companion_0.2.0_x64-setup.exe` konumunda oluşturulur.

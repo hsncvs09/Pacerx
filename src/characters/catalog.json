@@ -1,4 +1,6 @@
 [
   { "id": "mint", "name": "Mint" },
-  { "id": "ember", "name": "Ember" }
+  { "id": "ember", "name": "Ember" },
+  { "id": "sprout", "name": "Sprout" },
+  { "id": "byte", "name": "Byte" }
 ]

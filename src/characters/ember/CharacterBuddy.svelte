@@ -49,44 +49,41 @@
   );
 
   let isExhausted = $derived(
-    mood === "focus_sad" ||
-      mood === "nag" ||
-      (mood === "focus" && focusProgress >= 0.8)
+    Boolean(snapshot && snapshot.remaining_secs <= 0 && snapshot.phase === "focus")
   );
 
-  let eyelidDrop = $derived.by(() => {
-    if (mood === "focus_sad") return 7;
-    if (mood === "nag") return 4;
-    if (mood === "focus" && focusProgress >= 0.8) {
-      return 3 + ((focusProgress - 0.8) / 0.2) * 4;
-    }
-    return 0;
-  });
+  let eyelidDrop = $derived(
+    mood === "focus_sad"
+      ? 8
+      : mood === "focus"
+      ? Math.floor(focusProgress * 5)
+      : 0
+  );
 
   let outerFlameUrl = $derived(
     mood === "warning"
       ? "url(#ember-outer-rage)"
       : mood === "sleeping"
-        ? "url(#ember-outer-sleep)"
-        : isExhausted
-          ? "url(#ember-outer-dim)"
-          : "url(#ember-outer-normal)"
+      ? "url(#ember-outer-sleep)"
+      : isExhausted
+      ? "url(#ember-outer-dim)"
+      : "url(#ember-outer-normal)"
   );
 
   let innerFlameUrl = $derived(
     mood === "warning"
       ? "url(#ember-inner-rage)"
       : mood === "sleeping"
-        ? "url(#ember-inner-sleep)"
-        : "url(#ember-inner-normal)"
+      ? "url(#ember-inner-sleep)"
+      : "url(#ember-inner-normal)"
   );
 
   let backPlumeColor = $derived(
     mood === "warning"
-      ? "#1D4ED8"
-      : isExhausted
-        ? "#641220"
-        : "url(#ember-back-plume-grad)"
+      ? "#1E40AF"
+      : mood === "sleeping"
+      ? "#3B1417"
+      : "url(#ember-back-plume-grad)"
   );
 
   let wispColor = $derived(mood === "warning" ? "#7DD3FC" : "#FFB703");
@@ -161,39 +158,44 @@
     {/if}
   </g>
 
+  {#if mood === "walking"}
+    <g class="walk-landing-sparks">
+      <!-- Sol taraftan çıkan korlar ve kıvılcımlar -->
+      <g class="sparks-side-left">
+        <path d="M 58 196 C 50 188, 44 192, 48 199 C 52 204, 58 200, 58 196 Z" fill="#FF9E00" stroke="#2A150D" stroke-width="1.6" />
+        <circle cx="44" cy="190" r="3.2" fill="#FFD13B" />
+        <circle cx="62" cy="204" r="2.2" fill="#FF4D00" />
+        <circle cx="34" cy="198" r="2.4" fill="#FF7B00" />
+        <circle cx="50" cy="205" r="1.8" fill="#FFF3B0" />
+      </g>
+
+      <!-- Sağ taraftan çıkan korlar ve kıvılcımlar -->
+      <g class="sparks-side-right">
+        <path d="M 182 196 C 190 188, 196 192, 192 199 C 188 204, 182 200, 182 196 Z" fill="#FF9E00" stroke="#2A150D" stroke-width="1.6" />
+        <circle cx="196" cy="190" r="3.2" fill="#FFD13B" />
+        <circle cx="178" cy="204" r="2.2" fill="#FF4D00" />
+        <circle cx="206" cy="198" r="2.4" fill="#FF7B00" />
+        <circle cx="190" cy="205" r="1.8" fill="#FFF3B0" />
+      </g>
+    </g>
+  {/if}
+
   <g class="legs-container">
     <g class="leg-left">
-      {#if mood === "walking" || mood === "dragged" || mood === "celebrate"}
-        <rect x="88" y="174" width="22" height="32" rx="9" fill="url(#ember-wood)" stroke="#2A150D" stroke-width="3.5" />
-        <ellipse cx="99" cy="202" rx="12" ry="5" fill="#FF6B1A" stroke="#2A150D" stroke-width="3" />
-      {:else}
-        <g transform="rotate(-14 96 190)">
-          <rect x="64" y="180" width="68" height="22" rx="10" fill="url(#ember-wood)" stroke="#2A150D" stroke-width="3.5" />
-          <ellipse cx="66" cy="191" rx="5" ry="9" fill="#C89D7C" stroke="#2A150D" stroke-width="2.5" />
-          <path d="M 82 186 L 106 186" stroke="#3B2216" stroke-width="2.5" stroke-linecap="round" />
-        </g>
-      {/if}
+      <g transform="rotate(-14 96 190)">
+        <rect x="64" y="180" width="68" height="22" rx="10" fill="url(#ember-wood)" stroke="#2A150D" stroke-width="3.5" />
+        <ellipse cx="66" cy="191" rx="5" ry="9" fill="#C89D7C" stroke="#2A150D" stroke-width="2.5" />
+        <path d="M 82 186 L 106 186" stroke="#3B2216" stroke-width="2.5" stroke-linecap="round" />
+      </g>
     </g>
 
     <g class="leg-right">
-      {#if mood === "walking" || mood === "dragged" || mood === "celebrate"}
-        <rect x="130" y="174" width="22" height="32" rx="9" fill="url(#ember-wood)" stroke="#2A150D" stroke-width="3.5" />
-        <ellipse cx="141" cy="202" rx="12" ry="5" fill="#FF6B1A" stroke="#2A150D" stroke-width="3" />
-      {:else}
-        <g transform="rotate(14 144 190)">
-          <rect x="108" y="180" width="68" height="22" rx="10" fill="url(#ember-wood)" stroke="#2A150D" stroke-width="3.5" />
-          <ellipse cx="174" cy="191" rx="5" ry="9" fill="#C89D7C" stroke="#2A150D" stroke-width="2.5" />
-          <path d="M 130 192 L 154 192" stroke="#3B2216" stroke-width="2.5" stroke-linecap="round" />
-        </g>
-      {/if}
-    </g>
-
-    {#if mood === "walking"}
-      <g class="walk-lines" stroke="#FFB703" stroke-width="3" stroke-linecap="round" opacity="0.75">
-        <line x1="70" y1="208" x2="82" y2="208" />
-        <line x1="158" y1="208" x2="170" y2="208" />
+      <g transform="rotate(14 144 190)">
+        <rect x="108" y="180" width="68" height="22" rx="10" fill="url(#ember-wood)" stroke="#2A150D" stroke-width="3.5" />
+        <ellipse cx="174" cy="191" rx="5" ry="9" fill="#C89D7C" stroke="#2A150D" stroke-width="2.5" />
+        <path d="M 130 192 L 154 192" stroke="#3B2216" stroke-width="2.5" stroke-linecap="round" />
       </g>
-    {/if}
+    </g>
   </g>
 
   <g class="body-group">
@@ -458,17 +460,25 @@
   <g class="fx-group">
     {#if mood === "celebrate"}
       <g class="sparks-celebrate">
-        <path d="M 62 56 C 67 44 74 48 70 58 C 66 64 59 62 62 56 Z" fill="#FF4D00" stroke="#2A150D" stroke-width="2" />
-        <path d="M 176 52 C 182 42 188 46 184 56 C 180 62 173 59 176 52 Z" fill="#FF7B00" stroke="#2A150D" stroke-width="2" />
-        <path d="M 48 92 C 53 83 59 87 55 95 C 52 99 45 97 48 92 Z" fill="#D9232E" stroke="#2A150D" stroke-width="2" />
-        <path d="M 192 88 C 197 79 203 83 199 91 C 195 96 189 93 192 88 Z" fill="#FF5126" stroke="#2A150D" stroke-width="2" />
-        <path d="M 88 22 L 91 30 L 99 33 L 91 36 L 88 44 L 85 36 L 77 33 L 85 30 Z" fill="#FFD13B" stroke="#2A150D" stroke-width="1.8" stroke-linejoin="round" />
-        <path d="M 154 20 L 157 27 L 164 30 L 157 33 L 154 40 L 151 33 L 144 30 L 151 27 Z" fill="#FF9E00" stroke="#2A150D" stroke-width="1.8" stroke-linejoin="round" />
-        <path d="M 120 12 L 122 18 L 128 20 L 122 22 L 120 28 L 118 22 L 112 20 L 118 18 Z" fill="#FFF3B0" stroke="#2A150D" stroke-width="1.6" stroke-linejoin="round" />
-        <circle cx="72" cy="74" r="3.5" fill="#FFB703" />
-        <circle cx="168" cy="70" r="3.5" fill="#FF5126" />
-        <circle cx="105" cy="28" r="2.5" fill="#FF4D00" />
-        <circle cx="137" cy="26" r="2.5" fill="#FFD13B" />
+        <!-- Tam tepe merkezde parlayan zafer kıvılcımları ve közler -->
+        <path d="M 120 -18 L 123 -9 L 132 -6 L 123 -3 L 120 6 L 117 -3 L 108 -6 L 117 -9 Z" fill="#FFF3B0" stroke="#2A150D" stroke-width="1.8" stroke-linejoin="round" />
+        <path d="M 96 -4 L 98 1 L 104 3 L 98 5 L 96 10 L 94 5 L 88 3 L 94 1 Z" fill="#FFD13B" stroke="#2A150D" stroke-width="1.6" stroke-linejoin="round" />
+        <path d="M 144 -4 L 146 1 L 152 3 L 146 5 L 144 10 L 142 5 L 136 3 L 142 1 Z" fill="#FFD13B" stroke="#2A150D" stroke-width="1.6" stroke-linejoin="round" />
+
+        <!-- Yukarı Fırlayan Alev Damlaları / Közler -->
+        <path d="M 106 -12 C 100 -20, 93 -16, 97 -8 C 100 -3, 107 -6, 106 -12 Z" fill="#FF7B00" stroke="#2A150D" stroke-width="1.6" />
+        <path d="M 134 -12 C 140 -20, 147 -16, 143 -8 C 140 -3, 133 -6, 134 -12 Z" fill="#FF4D00" stroke="#2A150D" stroke-width="1.6" />
+        <path d="M 114 -26 C 117 -34, 123 -34, 126 -26 C 124 -21, 117 -21, 114 -26 Z" fill="#FFD13B" stroke="#2A150D" stroke-width="1.5" />
+
+        <!-- Karakterin Tam Üstünde Saçılan Kıvılcım ve Kor Parçacıkları -->
+        <circle cx="120" cy="-32" r="2.8" fill="#FFFBEB" />
+        <circle cx="84" cy="-2" r="3.2" fill="#FFB703" />
+        <circle cx="156" cy="-2" r="3.2" fill="#FFB703" />
+        <circle cx="108" cy="8" r="2.5" fill="#FF5126" />
+        <circle cx="132" cy="8" r="2.5" fill="#FF7B00" />
+        <circle cx="74" cy="8" r="2.2" fill="#FF4D00" />
+        <circle cx="166" cy="8" r="2.2" fill="#FF4D00" />
+        <circle cx="120" cy="-8" r="3.4" fill="#FFD13B" />
       </g>
     {/if}
 
@@ -494,13 +504,19 @@
 
 <style>
   /* ==========================================================================
-     EMBER KARAKTER CSS ANİMASYONLARI (Çok Katmanlı Alev Hüzmesi Sistemi)
+     EMBER KARAKTER CSS ANİMASYONLARI (Çok Katmanlı Alev & Doğal Ocak Sistemi)
      ========================================================================== */
   .body-group {
     transform-origin: 120px 180px;
   }
+  .legs-container {
+    transform-origin: 120px 192px;
+  }
+  .ground-shadow {
+    transform-origin: 120px 212px;
+  }
   .flame-back-plume {
-    transform-origin: 120px 182px;
+    transform-origin: 120px 180px;
   }
   .flame-outer {
     transform-origin: 120px 180px;
@@ -509,90 +525,82 @@
     transform-origin: 120px 176px;
   }
   .flame-core-hot {
-    transform-origin: 120px 156px;
+    transform-origin: 120px 152px;
   }
   .flame-lick-left {
-    transform-origin: 78px 132px;
+    transform-origin: 82px 114px;
   }
   .flame-lick-right {
-    transform-origin: 162px 132px;
+    transform-origin: 158px 114px;
   }
   .flame-wisp-top {
-    transform-origin: 120px 52px;
+    transform-origin: 120px 56px;
   }
-  .leg-left {
-    transform-origin: 98px 176px;
-  }
-  .leg-right {
-    transform-origin: 142px 176px;
+  .face-group {
+    transform-origin: 120px 136px;
   }
 
-  /* 1. ODAK (FOCUS) VE IDLE MODLARI — CANLI ALEV HÜZMESİ HAREKETLERİ */
+  /* ==========================================================================
+     1. TEMEL DUYGU VE NEFES ANİMASYONLARI (IDLE, FOCUS, TIRED, SLEEPING)
+     ========================================================================== */
+
+  /* Idle Modu */
   .mood-idle .body-group {
-    animation: ember-breathe 2.2s steps(6, end) infinite;
+    animation: ember-breathe 2.4s ease-in-out infinite;
   }
-  .mood-focus .body-group {
-    animation: ember-focus-surge 1.5s steps(6, end) infinite;
+  .mood-idle .flame-back-plume {
+    animation: plume-sway-back 3.2s ease-in-out infinite;
+  }
+  .mood-idle .flame-outer {
+    animation: plume-wave-outer 2.2s ease-in-out infinite;
+  }
+  .mood-idle .flame-inner {
+    animation: plume-counter-inner 1.8s ease-in-out infinite;
+  }
+  .mood-idle .flame-core-hot {
+    animation: core-pulse 1.6s ease-in-out infinite;
+  }
+  .mood-idle .flame-lick-left {
+    animation: lick-curl-left 2.6s ease-in-out infinite;
+  }
+  .mood-idle .flame-lick-right {
+    animation: lick-curl-right 2.9s ease-in-out infinite;
+  }
+  .mood-idle .flame-wisp-top {
+    animation: wisp-dance 1.4s ease-in-out infinite alternate;
   }
 
-  /* Arka Alev Hüzmesi (Sağa-sola kıvrılarak uzayan derin kor katmanı) */
-  .mood-idle .flame-back-plume {
-    animation: plume-sway-back 2.1s steps(6, end) infinite;
+  /* Focus Modu (Kademeli ve Akıcı Çalışma) */
+  .mood-focus .body-group,
+  .mood-focus_sad .body-group {
+    animation: ember-focus-surge 3.4s ease-in-out infinite;
   }
   .mood-focus .flame-back-plume {
-    animation: plume-sway-back-focus 1.15s steps(6, end) infinite;
-  }
-
-  /* Ana Dış Alev Hüzmesi (Arka katmanla asenkron dalgalanma) */
-  .mood-idle .flame-outer {
-    animation: plume-wave-outer 1.8s steps(6, end) infinite;
+    animation: plume-sway-back-focus 2.8s ease-in-out infinite;
   }
   .mood-focus .flame-outer {
-    animation: plume-wave-outer-focus 0.95s steps(6, end) infinite;
-  }
-
-  /* İç Parlak Kor Çekirdeği (Zıt fazlı 3B ateş paralaksı) */
-  .mood-idle .flame-inner {
-    animation: plume-counter-inner 1.6s steps(6, end) infinite;
+    animation: plume-wave-outer-focus 1.9s ease-in-out infinite;
   }
   .mood-focus .flame-inner {
-    animation: plume-counter-inner-focus 0.85s steps(6, end) infinite;
+    animation: plume-counter-inner-focus 1.5s ease-in-out infinite;
   }
-
-  /* En İç Sıcak Kalp Nabzı */
-  .mood-idle .flame-core-hot,
   .mood-focus .flame-core-hot {
-    animation: core-pulse 0.9s steps(4, end) infinite;
+    animation: core-pulse 1.2s ease-in-out infinite;
+  }
+  .mood-focus .wisp-stream-1 {
+    animation: stream-rise-left 1.4s ease-in-out infinite;
+  }
+  .mood-focus .wisp-stream-2 {
+    animation: stream-rise-right 1.7s ease-in-out infinite;
+  }
+  .mood-focus .wisp-stream-3 {
+    animation: stream-rise-center 1.1s ease-in-out infinite;
   }
 
-  /* Yanlardan Kıvrılan Alev Dilleri (Licks) */
-  .mood-idle .flame-lick-left,
-  .mood-focus .flame-lick-left {
-    animation: lick-curl-left 1.05s steps(5, end) infinite;
-  }
-  .mood-idle .flame-lick-right,
-  .mood-focus .flame-lick-right {
-    animation: lick-curl-right 1.25s steps(5, end) infinite;
-  }
-
-  /* Üstten Kopup Yükselen Alev Damlaları ve Kıvılcımlar */
-  .mood-idle .flame-wisp-top,
-  .mood-focus .flame-wisp-top {
-    animation: wisp-dance 1.1s steps(5, end) infinite;
-  }
-  .wisp-stream-1 {
-    animation: stream-rise-left 1.4s steps(6, end) infinite;
-  }
-  .wisp-stream-2 {
-    animation: stream-rise-right 1.65s steps(6, end) infinite 0.45s;
-  }
-  .wisp-stream-3 {
-    animation: stream-rise-center 1.2s steps(6, end) infinite 0.2s;
-  }
-
-  /* Yorgun / Sönük Durum (Son %20 odak ve focus_sad) */
-  .exhausted .body-group {
-    animation: ember-tired 3s steps(4, end) infinite;
+  /* Exhausted / Focus Sad (Yorgun Ateş) */
+  .exhausted .body-group,
+  .mood-focus_sad .body-group {
+    animation: ember-tired 3.0s steps(4, end) infinite;
   }
   .exhausted .flame-back-plume,
   .exhausted .flame-outer,
@@ -608,32 +616,68 @@
     animation: smoke-rise 3s steps(4, end) infinite;
   }
 
-  /* 2. KISA SÜRELİ VE ETKİLEŞİMLİ MODLAR */
-  /* Walking (5 dk Mola Yürüyüşü) */
+  /* ==========================================================================
+     2. HAREKET VE ETKİLEŞİM MODLARI (WALKING, CELEBRATE, DRAGGED, POKED, VB.)
+     ========================================================================== */
+
+  /* WALKING: Olduğu Yerde Zıplama + İki Tarafa Eşit Saçılan Köz ve Kıvılcımlar */
   .mood-walking .body-group {
-    animation: walk-bounce 0.55s ease-in-out infinite alternate;
+    animation: slime-hop-body 0.72s cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+  }
+  .mood-walking .legs-container {
+    animation: slime-hop-logs 0.72s cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+  }
+  .mood-walking .ground-shadow {
+    animation: slime-hop-shadow 0.72s cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+  }
+  .mood-walking .sparks-side-left {
+    transform-origin: 64px 202px;
+    animation: landing-sparks-burst-left 0.72s cubic-bezier(0.16, 0.88, 0.35, 1) infinite;
+  }
+  .mood-walking .sparks-side-right {
+    transform-origin: 176px 202px;
+    animation: landing-sparks-burst-right 0.72s cubic-bezier(0.16, 0.88, 0.35, 1) infinite;
   }
   .mood-walking .flame-outer {
     animation: plume-wave-outer-focus 1.1s steps(6, end) infinite;
   }
-  .mood-walking .leg-left {
-    animation: leg-walk-l 0.55s ease-in-out infinite alternate;
+
+  /* CELEBRATE: Odunlar Yerde Sabit, Alev Roket Gibi Fırlar ve Karakterin Tam Üstünde Közler Saçılır */
+  .mood-celebrate .body-group {
+    animation: firework-launch-body 0.9s cubic-bezier(0.22, 1, 0.36, 1) infinite;
   }
-  .mood-walking .leg-right {
-    animation: leg-walk-r 0.55s ease-in-out infinite alternate;
+  .mood-celebrate .legs-container {
+    animation: firework-recoil-logs 0.9s ease-out infinite;
+  }
+  .mood-celebrate .ground-shadow {
+    animation: firework-shadow-pulse 0.9s ease-in-out infinite;
+  }
+  .mood-celebrate .sparks-celebrate {
+    transform-origin: 120px 0px;
+    animation: firework-sparks-burst 0.9s cubic-bezier(0.18, 0.9, 0.35, 1) infinite;
+  }
+
+  /* DRAGGED: Alev Yukarı Doğru Uzar, Odunlar Çekim Gücüne Kapılıp Altında Sallanır */
+  .mood-dragged .body-group {
+    animation: dragged-flame-stretch 0.65s ease-in-out infinite alternate;
+  }
+  .mood-dragged .legs-container {
+    animation: dragged-logs-pendulum 0.55s ease-in-out infinite alternate;
+  }
+  .mood-dragged .leg-left {
+    animation: dragged-log-left-dangle 0.45s ease-in-out infinite alternate;
+  }
+  .mood-dragged .leg-right {
+    animation: dragged-log-right-dangle 0.45s ease-in-out infinite alternate-reverse;
+  }
+  .mood-dragged .ground-shadow {
+    transform: scale(0.65);
+    opacity: 0.45;
   }
 
   /* Poked (Tek Tıklama Harlama Tepkisi) */
   .mood-poked .body-group {
     animation: poke-flare 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
-  }
-
-  /* Celebrate (25 dk Bitiş Sevinç Zıplaması) */
-  .mood-celebrate .body-group {
-    animation: celebrate-jump 0.6s ease-in-out infinite alternate;
-  }
-  .mood-celebrate .sparks-celebrate {
-    animation: sparks-pop 0.8s steps(4, end) infinite;
   }
 
   /* Warning (Mola İhlali: Yüksek Isı Harlaması) */
@@ -650,16 +694,9 @@
     animation: nag-sway 1.2s ease-in-out infinite alternate;
   }
 
-  /* Dragged (Fareyle Sürüklenme) */
-  .mood-dragged .body-group {
-    transform: rotate(-6deg) scale(0.96, 1.06);
-  }
-  .mood-dragged .leg-left,
-  .mood-dragged .leg-right {
-    animation: dangle-legs 0.4s ease-in-out infinite alternate;
-  }
-
-  /* KEYFRAMES — ÇOK KATMANLI ALEV HÜZMESİ FİZİĞİ */
+  /* ==========================================================================
+     KEYFRAMES — ALEV HÜZMESİ VE YENİ FİZİK ANİMASYONLARI
+     ========================================================================== */
   @keyframes ember-breathe {
     0%, 100% { transform: scale(1, 1) translateY(0px); }
     50% { transform: scale(1.02, 0.98) translateY(-3px); }
@@ -671,7 +708,6 @@
     66% { transform: translateY(-1px) scale(1.02, 0.99); }
   }
 
-  /* Arka Hüzme Dalgalanması */
   @keyframes plume-sway-back {
     0%, 100% { transform: skewX(-4deg) scale(1, 1); }
     50% { transform: skewX(5deg) scale(0.96, 1.07) translateY(-3px); }
@@ -684,7 +720,6 @@
     100% { transform: skewX(-7deg) scale(0.96, 1.06) translateY(-2px); }
   }
 
-  /* Dış Alev Hüzmesi Dalgalanması */
   @keyframes plume-wave-outer {
     0%, 100% { transform: skewX(3deg) scale(1, 1); }
     50% { transform: skewX(-4deg) scale(1.03, 0.97) translateY(-2px); }
@@ -697,7 +732,6 @@
     100% { transform: skewX(5deg)  scale(1.02, 0.97); }
   }
 
-  /* İç Çekirdek Zıt Fazlı Dansı */
   @keyframes plume-counter-inner {
     0%, 100% { transform: skewX(-3deg) scale(0.98, 1.03); }
     50% { transform: skewX(4deg) scale(1.04, 0.96) translateY(-2px); }
@@ -714,7 +748,6 @@
     50% { transform: scale(1.16, 1.24) translateY(-3px); opacity: 0.9; }
   }
 
-  /* Yan Alev Dilleri Kıvrılması */
   @keyframes lick-curl-left {
     0%, 100% { transform: rotate(0deg) translateY(0px) scale(1); }
     50% { transform: rotate(-14deg) translateY(-8px) scale(0.88, 1.18); }
@@ -724,7 +757,6 @@
     50% { transform: rotate(6deg) translateY(1px) scale(1.05, 0.92); }
   }
 
-  /* Yükselen Alev Damlacıkları (Wisp Stream) */
   @keyframes wisp-dance {
     0%   { transform: translateY(4px) translateX(0px) scale(1.1); opacity: 0.95; }
     50%  { transform: translateY(-7px) translateX(-3px) scale(0.85, 1.15); opacity: 1; }
@@ -750,7 +782,7 @@
   }
 
   @keyframes ember-tired {
-    0%, 100% { transform: scale(0.95, 0.9) translateY(6px); }
+    0%, 100% { transform: scale(0.95, 0.90) translateY(6px); }
     50% { transform: scale(0.97, 0.87) translateY(9px); }
   }
 
@@ -764,19 +796,179 @@
     100% { transform: translateY(-8px); opacity: 0.95; }
   }
 
-  @keyframes walk-bounce {
-    from { transform: translateY(0px); }
-    to { transform: translateY(-6px); }
+  /* WALKING: Olduğu Yerde Slime Zıplaması ve İki Tarafa Eşit Saçılan Közler */
+  @keyframes slime-hop-body {
+    0%, 100% {
+      transform: translateY(6px) scale(1.16, 0.84);
+    }
+    20% {
+      transform: translateY(-4px) scale(0.90, 1.14);
+    }
+    50% {
+      transform: translateY(-22px) scale(0.96, 1.05);
+    }
+    78% {
+      transform: translateY(-2px) scale(1.06, 0.95);
+    }
   }
 
-  @keyframes leg-walk-l {
-    from { transform: rotate(-16deg) translateY(-3px); }
-    to { transform: rotate(16deg) translateY(2px); }
+  @keyframes slime-hop-logs {
+    0%, 100% {
+      transform: translateY(3px) scale(1.08, 0.92);
+    }
+    50% {
+      transform: translateY(-10px) scale(0.98, 1.02);
+    }
+    78% {
+      transform: translateY(0px) scale(1.02, 0.98);
+    }
   }
 
-  @keyframes leg-walk-r {
-    from { transform: rotate(16deg) translateY(2px); }
-    to { transform: rotate(-16deg) translateY(-3px); }
+  @keyframes slime-hop-shadow {
+    0%, 100% {
+      transform: scale(1.15, 1.1);
+      opacity: 0.9;
+    }
+    50% {
+      transform: scale(0.72);
+      opacity: 0.45;
+    }
+  }
+
+  @keyframes landing-sparks-burst-left {
+    0% {
+      opacity: 0;
+      transform: translate(6px, 2px) scale(0.2);
+    }
+    8% {
+      opacity: 1;
+      transform: translate(0px, 0px) scale(0.9);
+    }
+    26% {
+      opacity: 0.95;
+      transform: translate(-14px, -11px) scale(1.25);
+    }
+    44% {
+      opacity: 0;
+      transform: translate(-22px, -16px) scale(0.5);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(0px, 0px) scale(0.2);
+    }
+  }
+
+  @keyframes landing-sparks-burst-right {
+    0% {
+      opacity: 0;
+      transform: translate(-6px, 2px) scale(0.2);
+    }
+    8% {
+      opacity: 1;
+      transform: translate(0px, 0px) scale(0.9);
+    }
+    26% {
+      opacity: 0.95;
+      transform: translate(14px, -11px) scale(1.25);
+    }
+    44% {
+      opacity: 0;
+      transform: translate(22px, -16px) scale(0.5);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(0px, 0px) scale(0.2);
+    }
+  }
+
+  /* CELEBRATE: Odunlardan Roket/Havai Fişek Gibi Fırlama (Squash & Stretch) */
+  @keyframes firework-launch-body {
+    0%, 100% {
+      transform: translateY(5px) scale(1.18, 0.82);
+    }
+    15% {
+      transform: translateY(-6px) scale(0.84, 1.22);
+    }
+    45% {
+      transform: translateY(-28px) scale(1.08, 1.12);
+    }
+    62% {
+      transform: translateY(-24px) scale(1.14, 1.06);
+    }
+    85% {
+      transform: translateY(-2px) scale(0.94, 1.06);
+    }
+  }
+
+  @keyframes firework-recoil-logs {
+    0%, 100% {
+      transform: translateY(3px) scale(1.06, 0.93);
+    }
+    20% {
+      transform: translateY(4px) scale(1.08, 0.90);
+    }
+    50%, 80% {
+      transform: translateY(0px) scale(1, 1);
+    }
+  }
+
+  @keyframes firework-shadow-pulse {
+    0%, 100% {
+      transform: scaleX(1.1);
+      opacity: 1;
+    }
+    50% {
+      transform: scaleX(0.75);
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes firework-sparks-burst {
+    0%, 20% {
+      opacity: 0;
+      transform: translateY(30px) scale(0.2);
+    }
+    42% {
+      opacity: 1;
+      transform: translateY(-4px) scale(0.95);
+    }
+    60%, 72% {
+      opacity: 0.95;
+      transform: translateY(-22px) scale(1.25);
+    }
+    92%, 100% {
+      opacity: 0;
+      transform: translateY(-34px) scale(1.4);
+    }
+  }
+
+  /* DRAGGED: Yukarı Uzayan Alev ve Çekim Gücüyle Sallanan Odunlar */
+  @keyframes dragged-flame-stretch {
+    0% {
+      transform: translateY(-10px) scale(0.88, 1.16) rotate(-3deg);
+    }
+    100% {
+      transform: translateY(-14px) scale(0.85, 1.20) rotate(3deg);
+    }
+  }
+
+  @keyframes dragged-logs-pendulum {
+    0% {
+      transform: translateY(6px) translateX(-4px) rotate(-6deg);
+    }
+    100% {
+      transform: translateY(9px) translateX(4px) rotate(6deg);
+    }
+  }
+
+  @keyframes dragged-log-left-dangle {
+    0% { transform: rotate(-4deg) translateY(0px); }
+    100% { transform: rotate(5deg) translateY(3px); }
+  }
+
+  @keyframes dragged-log-right-dangle {
+    0% { transform: rotate(4deg) translateY(0px); }
+    100% { transform: rotate(-5deg) translateY(3px); }
   }
 
   @keyframes poke-flare {
@@ -784,16 +976,6 @@
     40% { transform: scale(1.16, 0.86); }
     75% { transform: scale(0.92, 1.12) translateY(-8px); }
     100% { transform: scale(1, 1); }
-  }
-
-  @keyframes celebrate-jump {
-    from { transform: translateY(0px) scale(1.04, 0.96); }
-    to { transform: translateY(-16px) scale(0.96, 1.06); }
-  }
-
-  @keyframes sparks-pop {
-    0%, 100% { transform: scale(0.9) translateY(0px); }
-    50% { transform: scale(1.08) translateY(-6px); }
   }
 
   @keyframes warning-shake {
@@ -804,11 +986,6 @@
   @keyframes nag-sway {
     from { transform: rotate(-4deg) translateY(3px); }
     to { transform: rotate(4deg) translateY(3px); }
-  }
-
-  @keyframes dangle-legs {
-    from { transform: rotate(-12deg); }
-    to { transform: rotate(12deg); }
   }
 
   /* Erişilebilirlik & Performans: Reduced Motion */

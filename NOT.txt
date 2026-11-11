@@ -13,7 +13,7 @@ Stop-Process -Name "pomodoro-companion" -Force -ErrorAction SilentlyContinue; Re
 2. Kurulum Paketini (setup.exe) Güncelleyip GitHub'a Gönderme Komutu
 powershell
 
-Set-Location "C:\Users\ehascav\Documents\AG Projects\Pacerx"; & "C:\Users\ehascav\AppData\Local\tauri\NSIS\makensis.exe" "C:\Users\ehascav\Documents\AG Projects\Pacerx\target\release\nsis\x64\installer.nsi"; Copy-Item "C:\Users\ehascav\Documents\AG Projects\Pacerx\target\release\nsis\x64\nsis-output.exe" "C:\Users\ehascav\Documents\AG Projects\Pacerx\target\release\bundle\nsis\Pomodoro Companion_0.1.0_x64-setup.exe" -Force; & "C:\Users\ehascav\AppData\Local\Programs\Git\cmd\git.exe" push -u origin main --tags --force
+Set-Location "C:\Users\ehascav\Documents\AG Projects\Pacerx"; & "C:\Users\ehascav\AppData\Local\tauri\NSIS\makensis.exe" "C:\Users\ehascav\Documents\AG Projects\Pacerx\target\release\nsis\x64\installer.nsi"; Copy-Item "C:\Users\ehascav\Documents\AG Projects\Pacerx\target\release\nsis\x64\nsis-output.exe" "C:\Users\ehascav\Documents\AG Projects\Pacerx\target\release\bundle\nsis\Pomodoro Companion_0.2.0_x64-setup.exe" -Force; & "C:\Users\ehascav\AppData\Local\Programs\Git\cmd\git.exe" push -u origin main --tags --force
 
 Geliştirici Modunda Tüm 10 Modu Yan Yana İncelemek İçin:
 
